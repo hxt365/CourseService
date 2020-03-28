@@ -32,7 +32,7 @@ func (cs *CourseStore) GetByID(id uint) (*model.Course, error) {
 }
 
 func (cs *CourseStore) Update(c *model.Course) error {
-	return cs.db.Update(c).Error
+	return cs.db.Model(c).Select("name, description, prerequisite, aim, maxStudent, fee").Update(c).Error
 }
 
 func (cs *CourseStore) Delete(c *model.Course) error {
@@ -54,8 +54,8 @@ func (cs *CourseStore) ListByTutor(tutorID uint, offset, limit int) ([]model.Cou
 		courses []model.Course
 		count   int
 	)
-	cs.db.Where(&model.Course{Tutor: tutorID}).Offset(offset).Limit(limit).Order("created_at DESC").Find(&courses)
-	cs.db.Model(&model.Course{}).Where(&model.Course{Tutor: tutorID}).Count(&count)
+	cs.db.Where(&model.Course{Mentor: tutorID}).Offset(offset).Limit(limit).Order("created_at DESC").Find(&courses)
+	cs.db.Model(&model.Course{}).Where(&model.Course{Mentor: tutorID}).Count(&count)
 	return courses, count, nil
 }
 
@@ -74,10 +74,11 @@ func (cs *CourseStore) ListByStudent(studentID uint, offset, limit int) ([]model
 	return courses, count, nil
 }
 
-func (cs *CourseStore) IfStudentHasCourse(studentID, courseID uint) bool {
-	_, err := cs.db.Table("student_course").Select("1").
-		Where("student_id = ? AND course_id = ?", studentID, courseID).Rows()
-	return err == nil
+func (cs *CourseStore) IfStudentTookCourse(studentID, courseID uint) bool {
+	var count int
+	cs.db.Table("student_course").Select("1").
+		Where("student_id = ? AND course_id = ?", studentID, courseID).Count(&count)
+	return count > 0
 }
 
 func (cs *CourseStore) CourseTakenByStudent(course *model.Course, userID uint) error {

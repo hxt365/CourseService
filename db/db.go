@@ -44,8 +44,8 @@ func TestDB() *gorm.DB {
 	return db
 }
 
-func DropTestDB(db *gorm.DB) {
-	db.Exec(fmt.Sprint("DROP DATABASE ", os.Getenv("TEST_DATABASE_NAME")))
+func DropTestDB(db *gorm.DB) error {
+	return db.Exec(fmt.Sprint("DROP DATABASE ", os.Getenv("TEST_DATABASE_NAME"))).Error
 }
 
 func AutoMigrate(db *gorm.DB) {

@@ -2,16 +2,16 @@ package handler
 
 import (
 	"CourseService/router/middleware"
+	"CourseService/utils"
 	"github.com/labstack/echo/v4"
-	"os"
 )
 
 func (h *Handler) Register(r *echo.Group) {
-	jwtMiddleware := middleware.JWT(os.Getenv("JWT_PUBLIC"))
-	onlyTutorMiddleware := middleware.OnlyTutor()
+	jwtMiddleware := middleware.JWT(utils.PublicKey())
+	onlyMentorMiddleware := middleware.OnlyMentor()
 
 	courses := r.Group("courses/")
-	courses.GET("", h.GetListOfCourses)
+	courses.GET("", h.GetListOfCourses, jwtMiddleware)
 	courses.GET(":id/", h.GetCourse)
 	courses.GET(":id/reviews/", h.GetListOfReviewsByCourse)
 
@@ -21,16 +21,16 @@ func (h *Handler) Register(r *echo.Group) {
 	courses.POST(":id/notifications/", h.CreateNotification, jwtMiddleware)
 	courses.GET(":id/notifications/", h.GetListOfNotifications, jwtMiddleware)
 
-	courses.POST("", h.CreateCourse, jwtMiddleware, onlyTutorMiddleware)
-	courses.PUT("/:id/", h.UpdateCourse, jwtMiddleware, onlyTutorMiddleware)
-	courses.PATCH("/:id/", h.UpdateCourse, jwtMiddleware, onlyTutorMiddleware)
-	courses.DELETE(":id/", h.DeleteCourse, jwtMiddleware, onlyTutorMiddleware)
+	courses.POST("", h.CreateCourse, jwtMiddleware, onlyMentorMiddleware)
+	courses.PUT("/:id/", h.UpdateCourse, jwtMiddleware, onlyMentorMiddleware)
+	courses.PATCH("/:id/", h.UpdateCourse, jwtMiddleware, onlyMentorMiddleware)
+	courses.DELETE(":id/", h.DeleteCourse, jwtMiddleware, onlyMentorMiddleware)
 
 	users := r.Group("users/")
 	users.GET(":id/reviews/", h.GetListOfReviewsByUser)
 
-	tutors := r.Group("tutors/")
-	tutors.GET(":id/courses/", h.GetListOfCoursesByTutor)
+	mentors := r.Group("mentors/")
+	mentors.GET(":id/courses/", h.GetListOfCoursesByMentor)
 
 	students := r.Group("students/")
 	students.GET(":id/courses/", h.GetListOfCoursesByStudent)

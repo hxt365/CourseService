@@ -4,7 +4,7 @@ import "CourseService/model"
 
 type courseResponse struct {
 	ID           uint              `json:"id"`
-	Tutor        uint              `json:"tutor"`
+	Mentor       uint              `json:"tutor"`
 	Name         string            `json:"name"`
 	Description  string            `json:"description"`
 	Prerequisite string            `json:"prerequisite"`
@@ -29,7 +29,7 @@ type courseListResponse struct {
 func newCourseResponse(course *model.Course) *singleCourseResponse {
 	c := &courseResponse{
 		ID:           course.ID,
-		Tutor:        course.Tutor,
+		Mentor:       course.Mentor,
 		Name:         course.Name,
 		Description:  course.Description,
 		Prerequisite: course.Prerequisite,
@@ -58,7 +58,7 @@ func newCourseListResponse(courses []model.Course, count int) *courseListRespons
 	for _, c := range courses {
 		cs.Courses = append(cs.Courses, &courseResponse{
 			ID:           c.ID,
-			Tutor:        c.Tutor,
+			Mentor:       c.Mentor,
 			Name:         c.Name,
 			Description:  c.Description,
 			Prerequisite: c.Prerequisite,

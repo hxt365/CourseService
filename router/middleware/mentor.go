@@ -6,11 +6,11 @@ import (
 	"net/http"
 )
 
-func OnlyTutor() echo.MiddlewareFunc {
+func OnlyMentor() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			role := c.Get("role")
-			if role == "tutor" {
+			if role == "mentor" {
 				return next(c)
 			}
 			return c.JSON(http.StatusForbidden, utils.AccessForbiden())

@@ -11,7 +11,7 @@ import (
 // Authenticated
 func (h *Handler) CreateReview(c echo.Context) error {
 	userID := c.Get("user").(uint)
-	courseID, err := strconv.Atoi(c.Param("course"))
+	courseID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, utils.NewError(err))
 	}
@@ -37,7 +37,7 @@ func (h *Handler) CreateReview(c echo.Context) error {
 
 func (h *Handler) GetListOfReviewsByCourse(c echo.Context) error {
 	offset, limit := utils.GetOffsetLimit(c)
-	courseID, err := strconv.Atoi(c.Param("course"))
+	courseID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, utils.NewError(err))
 	}
@@ -45,12 +45,12 @@ func (h *Handler) GetListOfReviewsByCourse(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, utils.NewError(err))
 	}
-	return c.JSON(http.StatusCreated, newReviewListResponse(reviews, count))
+	return c.JSON(http.StatusOK, newReviewListResponse(reviews, count))
 }
 
 func (h *Handler) GetListOfReviewsByUser(c echo.Context) error {
 	offset, limit := utils.GetOffsetLimit(c)
-	userID, err := strconv.Atoi(c.Param("user"))
+	userID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, utils.NewError(err))
 	}
@@ -58,5 +58,5 @@ func (h *Handler) GetListOfReviewsByUser(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, utils.NewError(err))
 	}
-	return c.JSON(http.StatusCreated, newReviewListResponse(reviews, count))
+	return c.JSON(http.StatusOK, newReviewListResponse(reviews, count))
 }

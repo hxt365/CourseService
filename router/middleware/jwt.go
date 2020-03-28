@@ -12,7 +12,7 @@ type (
 	Skipper   func(echo.Context) bool
 	JWTConfig struct {
 		Skipper    Skipper
-		SigningKey interface{}
+		VerificationKey interface{}
 	}
 	jwtExtractor func(echo.Context) (string, error)
 )
@@ -22,9 +22,9 @@ var (
 	ErrJWTInvalid = echo.NewHTTPError(http.StatusForbidden, "invalid or expired jwt")
 )
 
-func JWT(key string) echo.MiddlewareFunc {
+func JWT(key interface{}) echo.MiddlewareFunc {
 	c := JWTConfig{}
-	c.SigningKey = key
+	c.VerificationKey = key
 	return JWTWithConfig(c)
 }
 
@@ -45,16 +45,17 @@ func JWTWithConfig(config JWTConfig) echo.MiddlewareFunc {
 				if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
 					return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 				}
-				return config.SigningKey, nil
+				return config.VerificationKey, nil
 			})
 			if err != nil {
 				return c.JSON(http.StatusForbidden, utils.NewError(ErrJWTInvalid))
 			}
 			if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-				userID := claims["id"].(uint)
+				userID := uint(claims["user_id"].(float64))
 				role := claims["role"]
 				c.Set("user", userID)
 				c.Set("role", role)
+
 				return next(c)
 			}
 			return c.JSON(http.StatusForbidden, utils.NewError(ErrJWTInvalid))

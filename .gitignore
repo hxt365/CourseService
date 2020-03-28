@@ -7,3 +7,6 @@ vendor
 *.out
 .env
 main
+private.pem
+public.pem
+go.sum

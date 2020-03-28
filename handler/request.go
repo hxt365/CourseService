@@ -27,16 +27,21 @@ func (r *courseCreateRequest) bind(c echo.Context, course *model.Course) error {
 }
 
 type courseUpdateRequest struct {
-	Name         string `json:"name" validate:"required,max=100"`
-	Description  string `json:"description" validate:"required,max=300"`
-	Prerequisite string `json:"prerequisite" validate:"required,max=300"`
-	Aim          string `json:"aim" validate:"required,max=300"`
-	MaxStudent   uint   `json:"maxStudent" validate:"required,min=1,max=10"`
-	Fee          uint   `json:"fee" validate:"required,min=0"`
+	Name         string `json:"name" validate:"max=100"`
+	Description  string `json:"description" validate:"max=300"`
+	Prerequisite string `json:"prerequisite" validate:"max=300"`
+	Aim          string `json:"aim" validate:"max=300"`
+	MaxStudent   uint   `json:"maxStudent" validate:"min=1,max=10"`
+	Fee          uint   `json:"fee" validate:"min=0"`
 }
 
 func (r *courseUpdateRequest) populate(course *model.Course) {
-	_ = copier.Copy(r, course)
+	r.Name = course.Name
+	r.Description = course.Description
+	r.Prerequisite = course.Prerequisite
+	r.Aim = course.Aim
+	r.MaxStudent = course.MaxStudent
+	r.Fee = course.Fee
 }
 
 func (r *courseUpdateRequest) bind(c echo.Context, course *model.Course) error {
@@ -52,7 +57,7 @@ func (r *courseUpdateRequest) bind(c echo.Context, course *model.Course) error {
 
 type reviewCreateRequest struct {
 	Star    uint   `json:"star" validate:"required,min=1,max=5"`
-	Content string `json:"star" validate:"required,max=300"`
+	Content string `json:"content" validate:"required,max=300"`
 }
 
 func (r *reviewCreateRequest) bind(c echo.Context, review *model.Review) error {

@@ -11,7 +11,7 @@ import (
 
 // only tutor
 func (h *Handler) CreateNotification(c echo.Context) error {
-	courseID, err := strconv.Atoi(c.Param("course"))
+	courseID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusNotFound, utils.NotFound())
 	}
@@ -21,6 +21,9 @@ func (h *Handler) CreateNotification(c echo.Context) error {
 	}
 	if course == nil {
 		return c.JSON(http.StatusNotFound, utils.NotFound())
+	}
+	if course.Mentor != c.Get("user").(uint) {
+		return c.JSON(http.StatusForbidden, utils.AccessForbiden())
 	}
 	var notification model.Notification
 	req := &notificationCreateRequest{}
@@ -37,12 +40,12 @@ func (h *Handler) CreateNotification(c echo.Context) error {
 // Authenticated
 func (h *Handler) GetListOfNotifications(c echo.Context) error {
 	offset, limit := utils.GetOffsetLimit(c)
-	courseID, err := strconv.Atoi(c.Param("course"))
+	courseID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusNotFound, utils.NotFound())
 	}
 	userID := c.Get("user").(uint)
-	if !h.courseStore.IfStudentHasCourse(userID, uint(courseID)) {
+	if !h.courseStore.IfStudentTookCourse(userID, uint(courseID)) {
 		return c.JSON(http.StatusForbidden, utils.AccessForbiden())
 	}
 	notifications, count, err := h.notificationStore.ListByCourse(uint(courseID), offset, limit)

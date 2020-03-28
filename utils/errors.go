@@ -45,3 +45,10 @@ func NotFound() Error {
 	e.Errors["Body"] = "resource not found"
 	return e
 }
+
+func BadRequest() Error {
+	e := Error{}
+	e.Errors = make(map[string]interface{})
+	e.Errors["body"] = "bad request"
+	return e
+}

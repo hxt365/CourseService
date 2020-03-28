@@ -15,7 +15,7 @@ func (h *Handler) CreateCourse(c echo.Context) error {
 	if err := req.bind(c, &course); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
 	}
-	course.Tutor = c.Get("user").(uint)
+	course.Mentor = c.Get("user").(uint)
 	if err := h.courseStore.Create(&course); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
 	}
@@ -45,10 +45,13 @@ func (h *Handler) UpdateCourse(c echo.Context) error {
 	}
 	course, err := h.courseStore.GetByID(uint(id))
 	if err != nil {
-		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
+		return c.JSON(http.StatusInternalServerError, utils.NewError(err))
 	}
 	if course == nil {
 		return c.JSON(http.StatusNotFound, utils.NotFound())
+	}
+	if course.Mentor != c.Get("user") {
+		return c.JSON(http.StatusForbidden, utils.AccessForbiden())
 	}
 	req := &courseUpdateRequest{}
 	req.populate(course)
@@ -75,7 +78,7 @@ func (h *Handler) DeleteCourse(c echo.Context) error {
 		return c.JSON(http.StatusNotFound, utils.NotFound())
 	}
 	userID := c.Get("user").(uint)
-	if userID != course.Tutor {
+	if userID != course.Mentor {
 		return c.JSON(http.StatusForbidden, utils.AccessForbiden())
 	}
 	if err := h.courseStore.Delete(course); err != nil {
@@ -93,7 +96,7 @@ func (h *Handler) GetListOfCourses(c echo.Context) error {
 	return c.JSON(http.StatusOK, newCourseListResponse(courses, count))
 }
 
-func (h *Handler) GetListOfCoursesByTutor(c echo.Context) error {
+func (h *Handler) GetListOfCoursesByMentor(c echo.Context) error {
 	offset, limit := utils.GetOffsetLimit(c)
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -133,8 +136,11 @@ func (h *Handler) TakeCourse(c echo.Context) error {
 	if course == nil {
 		return c.JSON(http.StatusNotFound, utils.NotFound())
 	}
-	if h.courseStore.IfStudentHasCourse(userID, uint(courseID)) {
-		return c.JSON(http.StatusForbidden, utils.AccessForbiden())
+	if course.Mentor == userID {
+		return c.JSON(http.StatusBadRequest, utils.BadRequest())
+	}
+	if h.courseStore.IfStudentTookCourse(userID, uint(courseID)) {
+		return c.JSON(http.StatusBadRequest, utils.BadRequest())
 	}
 	if err := h.courseStore.CourseTakenByStudent(course, userID); err != nil {
 		return c.JSON(http.StatusInternalServerError, utils.NewError(err))
@@ -156,8 +162,8 @@ func (h *Handler) DropCourse(c echo.Context) error {
 	if course == nil {
 		return c.JSON(http.StatusNotFound, utils.NotFound())
 	}
-	if !h.courseStore.IfStudentHasCourse(userID, uint(courseID)) {
-		return c.JSON(http.StatusForbidden, utils.AccessForbiden())
+	if !h.courseStore.IfStudentTookCourse(userID, uint(courseID)) {
+		return c.JSON(http.StatusBadRequest, utils.BadRequest())
 	}
 	if err := h.courseStore.DropCourseByStudent(course, userID); err != nil {
 		return c.JSON(http.StatusInternalServerError, utils.NewError(err))
