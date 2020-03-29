@@ -9,4 +9,3 @@ vendor
 main
 private.pem
 public.pem
-go.sum
