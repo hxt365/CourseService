@@ -6,7 +6,7 @@ import (
 
 type Notification struct {
 	gorm.Model
-	Content  string `gorm:"type:varchar(200);not null"`
+	Content  string `gorm:"type:varchar(500);not null"`
 	CourseID uint
 	Course   Course
 }
