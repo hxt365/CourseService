@@ -34,6 +34,9 @@ func TestHandler_CreateNotification(t *testing.T) {
 	}))(c)
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusCreated, rec.Code)
+
+	_, err = h.cacheStore.GetCoursesNotificationsListCache(utils.DEFAULT_OFFSET, utils.DEFAULT_LIMIT, testCourse.ID)
+	assert.Error(t, err)
 }
 
 func TestHandler_CreateNotificationForAnotherCourse(t *testing.T) {
@@ -98,8 +101,17 @@ func TestHandler_GetListOfNotifications(t *testing.T) {
 	})(c)
 	assert.NoError(t, err)
 	if assert.Equal(t, http.StatusOK, rec.Code) {
-		var ns notificationListResponse
+		var ns notificationsListResponse
 		err := json.Unmarshal(rec.Body.Bytes(), &ns)
+		assert.NoError(t, err)
+		assert.Equal(t, 1, ns.Count)
+		assert.Equal(t, testNotification.Content, ns.Notifications[0].Content)
+	}
+
+	cache, err := ca.GetCoursesNotificationsListCache(utils.DEFAULT_OFFSET, utils.DEFAULT_LIMIT, testCourse.ID)
+	if assert.NoError(t, err) {
+		var ns notificationsListResponse
+		err := json.Unmarshal([]byte(cache), &ns)
 		assert.NoError(t, err)
 		assert.Equal(t, 1, ns.Count)
 		assert.Equal(t, testNotification.Content, ns.Notifications[0].Content)

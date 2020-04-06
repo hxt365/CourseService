@@ -34,6 +34,11 @@ func TestHandler_CreateReview(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusCreated, rec.Code)
+
+	_, err = ca.GetCoursesReviewsListCache(utils.DEFAULT_OFFSET, utils.DEFAULT_LIMIT, testCourse.ID)
+	assert.Error(t, err)
+	_, err = ca.GetUsersReviewsListCache(utils.DEFAULT_OFFSET, utils.DEFAULT_LIMIT, testStudent.ID)
+	assert.Error(t, err)
 }
 
 func TestHandler_GetListOfReviewsByCourse(t *testing.T) {
@@ -49,8 +54,17 @@ func TestHandler_GetListOfReviewsByCourse(t *testing.T) {
 	err := h.GetListOfReviewsByCourse(c)
 	assert.NoError(t, err)
 	if assert.Equal(t, http.StatusOK, rec.Code) {
-		var rs reviewListResponse
+		var rs reviewsListResponse
 		err := json.Unmarshal(rec.Body.Bytes(), &rs)
+		assert.NoError(t, err)
+		assert.Equal(t, 1, rs.Count)
+		assert.Equal(t, testReview.Content, rs.Reviews[0].Content)
+	}
+
+	cache, err := ca.GetCoursesReviewsListCache(utils.DEFAULT_OFFSET, utils.DEFAULT_LIMIT, testCourse.ID)
+	if assert.NoError(t, err) {
+		var rs reviewsListResponse
+		err := json.Unmarshal([]byte(cache), &rs)
 		assert.NoError(t, err)
 		assert.Equal(t, 1, rs.Count)
 		assert.Equal(t, testReview.Content, rs.Reviews[0].Content)
@@ -70,8 +84,17 @@ func TestHandler_GetListOfReviewsByUser(t *testing.T) {
 	err := h.GetListOfReviewsByUser(c)
 	assert.NoError(t, err)
 	if assert.Equal(t, http.StatusOK, rec.Code) {
-		var rs reviewListResponse
+		var rs reviewsListResponse
 		err := json.Unmarshal(rec.Body.Bytes(), &rs)
+		assert.NoError(t, err)
+		assert.Equal(t, 1, rs.Count)
+		assert.Equal(t, testReview.Content, rs.Reviews[0].Content)
+	}
+
+	cache, err := ca.GetUsersReviewsListCache(utils.DEFAULT_OFFSET, utils.DEFAULT_LIMIT, testStudent.ID)
+	if assert.NoError(t, err) {
+		var rs reviewsListResponse
+		err := json.Unmarshal([]byte(cache), &rs)
 		assert.NoError(t, err)
 		assert.Equal(t, 1, rs.Count)
 		assert.Equal(t, testReview.Content, rs.Reviews[0].Content)

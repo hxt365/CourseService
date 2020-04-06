@@ -8,11 +8,11 @@ import (
 func GetOffsetLimit(c echo.Context) (int, int) {
 	offset, err := strconv.Atoi(c.QueryParam("offset"))
 	if err != nil {
-		offset = 0
+		offset = DEFAULT_OFFSET
 	}
 	limit, err := strconv.Atoi(c.QueryParam("limit"))
 	if err != nil {
-		limit = 10
+		limit = DEFAULT_LIMIT
 	}
 	return offset, limit
 }

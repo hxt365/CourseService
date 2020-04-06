@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"log"
 	"os"
 )
 
-func New() *gorm.DB {
+func NewDB() *gorm.DB {
 	db, err := gorm.Open("mysql",
 		fmt.Sprintf("%s:%s@(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local",
 			os.Getenv("DATABASE_USER"),
@@ -18,7 +19,7 @@ func New() *gorm.DB {
 			os.Getenv("DATABASE_NAME"),
 		))
 	if err != nil {
-		fmt.Print("Storage error: ", err)
+		log.Println("Storage error: ", err)
 	}
 	db.DB().SetMaxOpenConns(10)
 	db.DB().SetMaxIdleConns(10)
@@ -26,7 +27,7 @@ func New() *gorm.DB {
 	return db
 }
 
-func TestDB() *gorm.DB {
+func NewTestDB() *gorm.DB {
 	db, err := gorm.Open("mysql",
 		fmt.Sprintf("%s:%s@(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local",
 			os.Getenv("DATABASE_USER"),
@@ -36,7 +37,7 @@ func TestDB() *gorm.DB {
 			os.Getenv("TEST_DATABASE_NAME"),
 		))
 	if err != nil {
-		fmt.Print("Storage error: ", err)
+		log.Println("Storage error: ", err)
 	}
 	db.DB().SetMaxOpenConns(10)
 	db.DB().SetMaxIdleConns(10)

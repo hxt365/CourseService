@@ -3,11 +3,13 @@ module CourseService
 go 1.14
 
 require (
+	github.com/alicebob/miniredis/v2 v2.11.4
+	github.com/avast/retry-go v2.6.0+incompatible
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-playground/universal-translator v0.17.0 // indirect
+	github.com/go-redis/redis/v7 v7.2.0
 	github.com/jinzhu/copier v0.0.0-20190924061706-b57f9002281a
 	github.com/jinzhu/gorm v1.9.12
-	github.com/labstack/echo v3.3.10+incompatible // indirect
 	github.com/labstack/echo/v4 v4.1.16
 	github.com/labstack/gommon v0.3.0
 	github.com/leodido/go-urn v1.2.0 // indirect

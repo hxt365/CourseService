@@ -2,6 +2,7 @@ package store
 
 import (
 	"CourseService/model"
+	"CourseService/utils"
 	"github.com/jinzhu/gorm"
 )
 
@@ -20,7 +21,7 @@ func (cs *CourseStore) Create(c *model.Course) error {
 func (cs *CourseStore) GetByID(id uint) (*model.Course, error) {
 	var c model.Course
 	err := cs.db.Preload("Reviews", func(db *gorm.DB) *gorm.DB {
-		return db.Offset(0).Limit(10).Order("created_at DESC")
+		return db.Offset(utils.DEFAULT_OFFSET).Limit(utils.DEFAULT_LIMIT).Order("created_at DESC")
 	}).First(&c, id).Error
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {

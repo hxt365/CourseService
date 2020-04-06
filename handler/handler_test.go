@@ -6,6 +6,7 @@ import (
 	"CourseService/router"
 	"CourseService/store"
 	"fmt"
+	"github.com/alicebob/miniredis/v2"
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
@@ -15,6 +16,8 @@ import (
 
 var (
 	d                   *gorm.DB
+	rd                  *db.Redis
+	ca                  *store.CacheStore
 	cs                  *store.CourseStore
 	ns                  *store.NotificationStore
 	rs                  *store.ReviewStore
@@ -37,12 +40,18 @@ func TestMain(m *testing.M) {
 }
 
 func setup() {
-	d = db.TestDB()
+	d = db.NewTestDB()
 	db.AutoMigrate(d)
+
+	rd = db.NewTestRedis()
+
 	cs = store.NewCourseStore(d)
 	ns = store.NewNotificationStore(d)
 	rs = store.NewReviewStore(d)
-	h = NewHandler(cs, ns, rs)
+	ca = store.NewCacheStore(rd)
+
+	h = NewHandler(cs, ns, rs, ca)
+
 	e = router.New()
 	_ = loadFixtures()
 }
@@ -55,6 +64,7 @@ func tearDown() {
 		log.Fatal(err)
 	}
 	_ = d.Close()
+	defer rd.Client.(*miniredis.Miniredis).Close()
 }
 
 func loadFixtures() error {

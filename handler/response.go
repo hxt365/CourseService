@@ -21,7 +21,7 @@ type singleCourseResponse struct {
 	Course *courseResponse `json:"course"`
 }
 
-type courseListResponse struct {
+type coursesListResponse struct {
 	Courses []*courseResponse `json:"courses"`
 	Count   int               `json:"count"`
 }
@@ -51,8 +51,8 @@ func newCourseResponse(course *model.Course) *singleCourseResponse {
 	return &singleCourseResponse{c}
 }
 
-func newCourseListResponse(courses []model.Course, count int) *courseListResponse {
-	cs := &courseListResponse{
+func newCourseListResponse(courses []model.Course, count int) *coursesListResponse {
+	cs := &coursesListResponse{
 		Count: count,
 	}
 	for _, c := range courses {
@@ -80,13 +80,13 @@ type reviewResponse struct {
 	CreatedAt string `json:"createdAt"`
 }
 
-type reviewListResponse struct {
+type reviewsListResponse struct {
 	Reviews []*reviewResponse `json:"reviews"`
 	Count   int               `json:"count"`
 }
 
-func newReviewListResponse(reviews []model.Review, count int) *reviewListResponse {
-	rs := &reviewListResponse{
+func newReviewListResponse(reviews []model.Review, count int) *reviewsListResponse {
+	rs := &reviewsListResponse{
 		Count: count,
 	}
 	for _, r := range reviews {
@@ -105,13 +105,13 @@ type notificationResponse struct {
 	CreatedAt string `json:"createdAt"`
 }
 
-type notificationListResponse struct {
+type notificationsListResponse struct {
 	Notifications []*notificationResponse `json:"notifications"`
 	Count         int                     `json:"count"`
 }
 
-func newNotificationListResponse(notifications []model.Notification, count int) *notificationListResponse {
-	ns := &notificationListResponse{
+func newNotificationListResponse(notifications []model.Notification, count int) *notificationsListResponse {
+	ns := &notificationsListResponse{
 		Count: count,
 	}
 	for _, n := range notifications {
