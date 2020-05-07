@@ -4,7 +4,6 @@ import (
 	"CourseService/model"
 	"CourseService/utils"
 	"encoding/json"
-	"fmt"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"strconv"
@@ -53,7 +52,6 @@ func (h *Handler) GetCourse(c echo.Context) error {
 
 	res := newCourseResponse(course)
 	resBytes, err := json.Marshal(res)
-	fmt.Println(string(resBytes))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
