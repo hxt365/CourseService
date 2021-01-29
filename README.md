@@ -1,5 +1,5 @@
 # Course service
-A RESTful service written on Go.  
+A RESTful service written in Go.  
 The service manages all online courses of an educational application.
 
 ## Tech stacks
