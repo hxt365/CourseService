@@ -2,6 +2,12 @@
 A RESTful service written on Go.  
 The service manages all online courses of an educational application.
 
+## Tech stacks
+- Go
+- PostgreSQL
+- Docker
+- JWT
+
 ## Database env
 DATABASE_NAME=course  
 DATABASE_USER=root  
