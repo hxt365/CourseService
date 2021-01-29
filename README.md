@@ -5,6 +5,7 @@ The service manages all online courses of an educational application.
 ## Tech stacks
 - Go
 - PostgreSQL
+- Redis
 - Docker
 - JWT
 
