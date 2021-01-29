@@ -1,4 +1,8 @@
-## Database
+# Course service
+A RESTful service written on Go.  
+The service manages all online courses of an educational application.
+
+## Database env
 DATABASE_NAME=course  
 DATABASE_USER=root  
 DATABASE_PASSWORD=123456  
